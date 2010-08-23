@@ -1,1 +1,4 @@
-ErrorDocument 404 /nus/index.php
+Options +FollowSymLinks
+RewriteEngine on
+RewriteCond %{REQUEST_URI} !(^/index\.php|\.css|\.gif|\.jpg)$
+RewriteRule ^(.*) /index.php?page=$1 [L]
