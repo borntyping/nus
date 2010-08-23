@@ -1,9 +1,9 @@
 <?php
-	$allowed_exts = array("php");
-	// $allowed_exts = array("php","html","txt","");
 	$path = "pages/";
 	$default_page = "home";
 	$notheme = FALSE;
+	
+	$allowed_exts = array("php","html","txt","");
 	
 	// Use default page on no page selected, i.e. "/"
 	if (!isset($_GET['page']) || $_GET['page'] == "") :
@@ -16,14 +16,6 @@
 	// ".." would allow acess to higher up directories
 	$bad  = array("..","/","<",">","?");
 	$page = str_replace($bad,"",$page);
-	$desu = "U2l0ZSBkZXNpZ24gYW5k
-IENNUyBieSBTYW11ZWwgQ2xlbWVudHMsIHdobyBjYW4gYmUgZm
-91bmQgaGVyZTogPGEgaHJlZj0iaHR0cDovL2Jvcm50eXBpbmcu
-Y28udWsvIj5ib3JudHlwaW5nLmNvLnVrPC9hPiwgb3IgY29udG
-FjdGVkIGF0IDxhIGhyZWY9Im1haWx0bzolNzMlNjElNkQlNzUl
-NjUlNkMlNDAlNjIlNkYlNzIlNkUlNzQlNzklNzAlNjklNkUlNj
-clMkUlNjMlNkYlMkUlNzUlNkIiPnRoaXMgYWRkcmVzczwvYT4u
-";
 
 	// Check for page using "$allowed_exts"
 	foreach ($allowed_exts as $ext) {
