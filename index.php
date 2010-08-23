@@ -1,8 +1,6 @@
 <?php
 	// Site index
-	
-	echo "Hi";
-	die();
+	// Should be redirected to by the 404 ErrorDocument
 	
 	// Get requested page
 	// Url should be formatted as www.domian.com/page?other
@@ -25,9 +23,9 @@
 		$ext = "php";
 	endif;
 	
-	include("theme/header.php");
+	// include("theme/header.php");
 	include("pages/${page}.${ext}");
-	echo "</div>"; // Add this to sidebar.
-	include("theme/sidebar.php");
-	include("theme/footer.php");
+	// echo "</div>"; // Add this to sidebar.
+	// include("theme/sidebar.php");
+	// include("theme/footer.php");
 ?>

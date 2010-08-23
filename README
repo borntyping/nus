@@ -1,3 +1,9 @@
-Nothing here yet.
+---------------------
+Nice Urls, Simple CMS
+---------------------
 
-Just tring to learn to use Git.
+Use the included .htaccess, or add
+
+	ErrorDocument 404 /DIR/index.php
+
+to Apaches config for the directory NUS-CMS is in.
