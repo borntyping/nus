@@ -1,4 +1,4 @@
 Options +FollowSymLinks
 RewriteEngine on
-RewriteCond %{REQUEST_URI} !(^/index\.php|\.css|\.gif|\.jpg)$
+RewriteCond %{REQUEST_URI} !(^/index\.php|\..*$)$
 RewriteRule ^(.*) /index.php?page=$1 [L]
