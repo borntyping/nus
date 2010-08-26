@@ -7,7 +7,7 @@ function clean($str) {
 	return $str;
 }
 
-function getpage() {
+function page() {
 	// Gets the name of the requested page
 	if(isset($_GET["page"])) :
 		$page = $_GET["page"];
@@ -26,7 +26,7 @@ function getpage() {
 	return $page;
 }
 
-function grab_gets() {
+function gets() {
 	// Gets the $_GET values directly though the url, for use with includes
 	$gets = $_SERVER["REQUEST_URI"];
 	
