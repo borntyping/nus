@@ -20,7 +20,7 @@ $filetypes = array(
 
 include("app/functions.php");
 
-$page = getpage();
+$page = page($default_page);
 
 // Find page
 
@@ -42,10 +42,11 @@ if ($pagenotfound == TRUE) :
 	header("Location: http://".$_SERVER['SERVER_NAME']."/404?search=$page");	
 endif;
 
-// Echo theme
+// Echo theme start
 
 echo "<b>".$page."</b><br>";
 
+// Echo page
 switch ($setting) {
 	case 0:
 		include($page);
@@ -59,3 +60,5 @@ switch ($setting) {
 		if ($nus['codeblocks']) { echo '</div>'; }
 		break;
 }
+
+// Echo theme end

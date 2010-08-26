@@ -7,7 +7,7 @@ function clean($str) {
 	return $str;
 }
 
-function page() {
+function page($default_page) {
 	// Gets the name of the requested page
 	if(isset($_GET["page"])) :
 		$page = $_GET["page"];
