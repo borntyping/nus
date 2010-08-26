@@ -3,6 +3,10 @@
 
 //include("app/settings.php");
 $default_page = "home";
+$pages_directory = "pages/";
+$nus = array(
+	"codeblocks" => TRUE
+);
 $filetypes = array(
 	// Include
 	"php"  => 0,
@@ -20,15 +24,38 @@ $page = getpage();
 
 // Find page
 
-if (!file_exists("pages/".$page.".php") && !file_exists("pages/".$page.".html")) :	
-	// header("HTTP/1.0 404 Not Found");
-	// header("Location: http://borntyping.co.uk/404?search=$page");
-elseif (file_exists("pages/${page}.php")) :
-	$ext = "php";
+$count = 0;
+$pagenotfound = TRUE;
+
+foreach ($filetypes as $filetype => $set) :
+	$count = $count + 1;
+	if (file_exists($pages_directory.$page.".".$filetype)) :
+		$page = $pages_directory.$page.".".$filetype;
+		$setting = $set;
+		$pagenotfound = FALSE;
+		break;
+	endif;
+endforeach;
+
+if ($pagenotfound == TRUE) :
+	header("HTTP/1.0 404 Not Found");
+	header("Location: http://".$_SERVER['SERVER_NAME']."/404?search=$page");	
 endif;
 
 // Echo theme
 
 echo "<b>".$page."</b><br>";
-echo $_SERVER["REQUEST_URI"]."<br>".$_SERVER["QUERY_STRING"]."<br>".$_SERVER["SCRIPT_NAME"]."<br><br>";
-include("pages/${page}.${ext}");
+
+switch ($setting) {
+	case 0:
+		include($page);
+		break;
+	case 1:
+		echo file_get_contents($page);
+		break;
+	case 2:
+		if ($nus['codeblocks']) { echo '<div class="nus-code-block">'; }
+		echo htmlentities(file_get_contents($page));
+		if ($nus['codeblocks']) { echo '</div>'; }
+		break;
+}
