@@ -18,47 +18,34 @@ $filetypes = array(
 	"ini"  => 2
 );
 
-include("app/functions.php");
+require_once('dev/FirePHPCore/fb.php');
+require_once('app/lib.php');
 
-$page = page($default_page);
+$page = new page();
+$page->find_name($default_page);
+$page->find_page($filetypes,$pages_directory);
 
-// Find page
-
-$count = 0;
-$pagenotfound = TRUE;
-
-foreach ($filetypes as $filetype => $set) :
-	$count = $count + 1;
-	if (file_exists($pages_directory.$page.".".$filetype)) :
-		$page = $pages_directory.$page.".".$filetype;
-		$setting = $set;
-		$pagenotfound = FALSE;
-		break;
-	endif;
-endforeach;
-
-if ($pagenotfound == TRUE) :
+if ($page->found == FALSE) :
 	header("HTTP/1.0 404 Not Found");
 	header("Location: http://".$_SERVER['SERVER_NAME']."/404?search=$page");	
 endif;
 
-// Echo theme start
+// Theme [Header]
+echo "<b>".$page->name."</b><br>";
 
-echo "<b>".$page."</b><br>";
-
-// Echo page
-switch ($setting) {
+// Theme [Page]
+switch ($page->setting) {
 	case 0:
-		include($page);
+		include($page->get_page_path());
 		break;
 	case 1:
-		echo file_get_contents($page);
+		echo file_get_contents($page->get_page_path());
 		break;
 	case 2:
 		if ($nus['codeblocks']) { echo '<div class="nus-code-block">'; }
-		echo htmlentities(file_get_contents($page));
+		echo htmlentities(file_get_contents($page->get_page_path()));
 		if ($nus['codeblocks']) { echo '</div>'; }
 		break;
 }
 
-// Echo theme end
+// Theme [Footer]
