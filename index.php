@@ -30,18 +30,22 @@ if ($page->found == FALSE) :
 	header("Location: http://".$_SERVER['SERVER_NAME']."/404?search=$page");	
 endif;
 
+// Theme [Header]
 echo "<b>".$page->name."</b><br>";
 
-switch ($setting) {
+// Theme [Page]
+switch ($page->setting) {
 	case 0:
-		include($page);
+		include($page->get_page_path());
 		break;
 	case 1:
-		echo file_get_contents($page);
+		echo file_get_contents($page->get_page_path());
 		break;
 	case 2:
 		if ($nus['codeblocks']) { echo '<div class="nus-code-block">'; }
-		echo htmlentities(file_get_contents($page));
+		echo htmlentities(file_get_contents($page->get_page_path()));
 		if ($nus['codeblocks']) { echo '</div>'; }
 		break;
 }
+
+// Theme [Footer]

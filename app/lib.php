@@ -27,12 +27,13 @@ class page {
 		fb($this->name, 'Page name found');
 	}
 	
-	var $page;
 	var $ext;
 	var $setting;
 	var $found;
+	var $dir;
 
 	function find_page($filetypes,$pages_directory) {
+		$this->dir = $pages_directory;
 		$this->found = FALSE;
 		foreach ($filetypes as $filetype => $set) :
 			if (file_exists($pages_directory.$this->name.".".$filetype)) :
@@ -45,22 +46,27 @@ class page {
 		unset($filetypes);
 		unset($filetype);
 		unset($set);
-		fb($this->ext, 'Ext found');
-		fb($this->setting, 'Setting found');
 		fb($this->found, 'Page found');
+		fb($this->ext, 'Ext is');
+		fb($this->setting, 'Setting is');
+		fb($this->dir, 'Pages dir is');
 	}
 	
-	// ----------
+	function get_page_path() {
+		return $this->dir.$this->name.".".$this->ext;
+	}
 		
-	var $get;
-		function find_gets() {
-			// Gets the $_GET values directly though the url, for use with includes
-			$gets = $_SERVER["REQUEST_URI"];	
-			$gets = clean($gets);
-			$gets = explode('?',$gets,2);
-			if(!isset($gets[1])) :
-				return array();
-			endif;
+	var $gets;
+
+	function find_gets() {
+		// Gets the $_GET values directly though the url, for use with includes
+		$gets = $_SERVER["REQUEST_URI"];	
+		$gets = clean($gets);
+		$gets = explode('?',$gets,2);
+		if(!isset($gets[1])) :
+			$this->gets = array();
+			fb($this->gets, "No gets", "Info");
+		else :
 			$gets = $gets[1];
 			$gets = explode('&',$gets);
 			foreach ($gets as &$get) :
@@ -74,9 +80,7 @@ class page {
 			endforeach;
 			$this->gets = $gets_final;
 			unset($gets_final);
-		}
-		
-		function get_gets() {
-			return $this->gets;
-		}
+			fb($this->gets, "Gets", "Info");
+		endif;
+	}
 }
