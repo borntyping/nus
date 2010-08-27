@@ -1,6 +1,6 @@
 # Nice Urls, Simple CMS
 
-Provides a simple Content managment system that provides pages with simple urls, such as
+Provides a simple Content managment system that provides pages with nice urls, such as
 	http://www.domain.com/homepage
 	http://www.domain.com/about
 
@@ -17,23 +17,17 @@ Use the included .htaccess, or put something to this effect into the existing .h
 
 ## Basic Structure
 
-1. index.php opened from any url on the site/dir
-2. Init vars
-	- From .ini file
-	- From included file
-3. Init functions
-	- From file
-4. Get $pagename
-5. Try and find requested page in /pages/ directory
+1. index.php opened from any url on the site/directory
+2. Init vars from .ini file
+3. Init classes from app/lib.php
+4. Find $page->name
+5. Try and find requested page in directory
 	-	Loop though dir using each allowed ext
 	-	If no file found
 		+	Send 404 headers
 		+	Find 404 page in theme, set $page to the 404 page
 		+	If no 404 page in theme, use a default 404.php
-	-	Set $page and $ext
+	-	Set $page, $ext and $setting
 6. Start theme
-7. Look at page $ext to decide how to echo it
-	-	echp_php(), echo_html(), echo_txt() etc.
-8. Echo $page using function
-9. End theme
-10. End script
+7. Use $page->setting to decide how to echo the page
+8. End theme
