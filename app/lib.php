@@ -10,7 +10,7 @@ function clean($str) {
 class page {
 	var $name;
 
-	function find_name($default_name) {
+	function find_name($config) {
 		// Finds the name of the requested page
 		if(isset($_GET["page"])) :
 			$name = $_GET["page"];
@@ -21,10 +21,10 @@ class page {
 		endif;
 		$name = clean($name);
 		if ($name == ""|$name == "/") :
-			$name = $default_name;
+			$name = $config['pages']['default'];
+			fb("Used default page",'info');
 		endif;
 		$this->name = $name;
-		fb($this->name, 'Page name found');
 	}
 	
 	var $ext;
@@ -32,24 +32,30 @@ class page {
 	var $found;
 	var $dir;
 
-	function find_page($filetypes,$pages_directory) {
-		$this->dir = $pages_directory;
+	function find_page($config) {
+		$this->dir = $config['nus']['pages_directory'];
 		$this->found = FALSE;
-		foreach ($filetypes as $filetype => $set) :
-			if (file_exists($pages_directory.$this->name.".".$filetype)) :
+		foreach ($config['filetypes'] as $filetype => $set) :
+			if (file_exists($this->dir.$this->name.".".$filetype)) :
 				$this->ext = $filetype;
 				$this->setting = $set;
 				$this->found = TRUE;
 				break;
 			endif;
 		endforeach;
+		
+		if ($this->found == FALSE && $this->name == $config['pages']['not_found']) :
+			$this->dir = "app/";
+			$this->name = "failsafe";
+			$this->ext = "php";
+			$this->setting = 0;
+			$this->found = TRUE;
+			fb("404 page not found in theme. Reverted to failsafe.php","Warning",'error');
+		endif;
+		
 		unset($filetypes);
 		unset($filetype);
 		unset($set);
-		fb($this->found, 'Page found');
-		fb($this->ext, 'Ext is');
-		fb($this->setting, 'Setting is');
-		fb($this->dir, 'Pages dir is');
 	}
 	
 	function get_page_path() {
@@ -82,5 +88,6 @@ class page {
 			unset($gets_final);
 			fb($this->gets, "Gets", "Info");
 		endif;
+		return $this->gets;
 	}
 }

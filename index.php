@@ -1,33 +1,25 @@
 <?php
-// Site index
+/*
+		Nice Urls, Simple CMS
+		index.php - gets the page and theme
+*/
 
-//include("app/settings.php");
-$default_page = "home";
-$pages_directory = "pages/";
-$nus = array(
-	"codeblocks" => TRUE
-);
-$filetypes = array(
-	// Include
-	"php"  => 0,
-	// Echo
-	"html" => 1,
-	"htm"  => 1,
-	// Print as code
-	"txt"  => 2,
-	"ini"  => 2
-);
+// Get FirePHP module [for testing]
+	require_once('dev/FirePHPCore/fb.php');
+// Get libary
+	require_once('app/lib.php');
+// Read settings
+	$config = parse_ini_file("app/config.ini", true);
 
-require_once('dev/FirePHPCore/fb.php');
-require_once('app/lib.php');
-
+// Get the page
 $page = new page();
-$page->find_name($default_page);
-$page->find_page($filetypes,$pages_directory);
+$page->find_name($config);
+$page->find_page($config);
 
+// Deal with 404 errors
 if ($page->found == FALSE) :
-	header("HTTP/1.0 404 Not Found");
-	header("Location: http://".$_SERVER['SERVER_NAME']."/404?search=$page");	
+	// header("HTTP/1.0 404 Not Found");
+	// header("Location: http://".$_SERVER['SERVER_NAME']."/".$config['pages']['not_found']."?search=".$page->name);
 endif;
 
 // Theme [Header]
@@ -42,9 +34,9 @@ switch ($page->setting) {
 		echo file_get_contents($page->get_page_path());
 		break;
 	case 2:
-		if ($nus['codeblocks']) { echo '<div class="nus-code-block">'; }
+		if ($config['nus']['codeblocks']) { echo '<div class="nus-code-block">'; }
 		echo htmlentities(file_get_contents($page->get_page_path()));
-		if ($nus['codeblocks']) { echo '</div>'; }
+		if ($config['nus']['codeblocks']) { echo '</div>'; }
 		break;
 }
 

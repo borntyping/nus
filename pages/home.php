@@ -1,6 +1,5 @@
 <?php
-	echo "<br>This is the default homepage";
+	echo "<br>This is the default homepage<br>Gets: ";
 	$page->find_gets();
-	echo "<br>Gets: ";
 	print_r($page->gets);
 ?>
