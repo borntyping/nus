@@ -1,5 +1,12 @@
 <?php
 
+if (!function_exists('fb')) {
+	function fb ($text,$label,$type){
+		$msg = $label.": ".$text;
+		error_log($msg);
+	}
+}
+
 function clean($str) {
 	$str = filter_var($str, 513);
 	$str = filter_var($str, 515);
@@ -22,7 +29,7 @@ class page {
 		$name = clean($name);
 		if ($name == ""|$name == "/") :
 			$name = $config['pages']['default'];
-			fb("Used default page",'info');
+			fb("No page was given","Used default page",'info');
 		endif;
 		$this->name = $name;
 	}
@@ -71,7 +78,6 @@ class page {
 		$gets = explode('?',$gets,2);
 		if(!isset($gets[1])) :
 			$this->gets = array();
-			fb($this->gets, "No gets", "Info");
 		else :
 			$gets = $gets[1];
 			$gets = explode('&',$gets);
@@ -86,8 +92,8 @@ class page {
 			endforeach;
 			$this->gets = $gets_final;
 			unset($gets_final);
-			fb($this->gets, "Gets", "Info");
 		endif;
+		fb($this->gets, "Gets", "Info");
 		return $this->gets;
 	}
 }
