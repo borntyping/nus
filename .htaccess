@@ -1,4 +1,1 @@
-Options +FollowSymLinks
-RewriteEngine on
-RewriteCond %{REQUEST_URI} !(^/index\.php|\..*$)$
-RewriteRule ^(.*) /index.php?page=$1 [L]
+ErrorDocument 404 /index.php

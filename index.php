@@ -5,28 +5,21 @@
 */
 
 // Get FirePHP module [for testing]
-	require_once('dev/FirePHPCore/fb.php');
+require_once('dev/FirePHPCore/fb.php');
+
 // Get libary
-	require_once('app/lib.php');
+require_once('app/lib.php');
+
 // Read settings
-	$config = parse_ini_file("app/config.ini", true);
+$config = parse_ini_file("app/config.ini", true);
 
 // Get the page
-$page = new page();
-$page->find_name($config);
-$page->find_page($config);
-
-// Deal with 404 errors
-if ($page->found == FALSE) :
-	// header("HTTP/1.0 404 Not Found");
-	// header("Location: http://".$_SERVER['SERVER_NAME']."/".$config['pages']['not_found']."?search=".$page->name);
-endif;
-
-// Theme [Header]
-echo "<b>".$page->name."</b><br>";
+$page = new page($config);
+$page->find_page();
 
 // Theme [Page]
-switch ($page->setting) {
+ob_start();
+switch ($page->setting) :
 	case 0:
 		include($page->get_page_path());
 		break;
@@ -38,6 +31,13 @@ switch ($page->setting) {
 		echo htmlentities(file_get_contents($page->get_page_path()));
 		if ($config['nus']['codeblocks']) { echo '</div>'; }
 		break;
-}
+endswitch;
+$page->contents = ob_get_contents();
+ob_end_clean();
 
-// Theme [Footer]
+if(isset($config['dir']['theme'])) :
+	$theme = $config['dir']['nus'].$config['dir']['theme'].$config['nus']['theme']."/";
+else :
+	$theme = $config['dir']['nus'].$config['dir']['theme'];
+endif;
+include $theme."theme.php";
