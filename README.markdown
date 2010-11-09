@@ -9,11 +9,7 @@ Provides a simple Content management system that provides pages with nice urls, 
 Activate by putting in the top level directory, and setting the server to redirect all pages to index.php.
 
 1. Place the nus files in the sites top level directory.
-	- Placing it in a lower directory should also work if
-		parentdir = ""
-		is changed to
-		parentdir = "directory/"
-		in config.ini. However, this is untested so far.
+	- Placing it in a lower directory should also work if `parentdir = ""` is changed to `parentdir = "directory/"` in config.ini. However, this is untested so far.
 2. Set up the redirection as shown below.
 
 ## Redirection
