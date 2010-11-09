@@ -11,23 +11,22 @@ Activate by putting in the top level directory, and setting the server to redire
 ### Apache
 Use the included .htaccess, or put something to this effect into the existing .htaccess or server .conf files
 
-	RewriteEngine on
-	RewriteCond %{REQUEST_URI} !(^/index\.php|\..*$)$
-	RewriteRule ^(.*) /index.php?page=$1 [L]
+	ErrorDocument 404 /index.php
+
+This redirects all pages to nus, unless they exist as a file on the server.
 
 ## Basic Structure
 
-1. index.php opened from any url on the site/directory
-2. Init vars from .ini file
-3. Init classes from app/lib.php
+1. Visting a page opens NUS at index.php 
+2. Get settings from config.ini
+3. Get classes from lib.php
 4. Find $page->name
-5. Try and find requested page in directory
-	-	Loop though dir using each allowed ext
-	-	If no file found
-		+	Send 404 headers
-		+	Find 404 page in theme, set $page to the 404 page
-		+	If no 404 page in theme, use a default 404.php
+5. Find requested page in directory
+	-	Loop though pages directory trying each allowed ext until one is found
+	-	If no file is found
+		+ Restart finding page with for a 404 page
+		+	If the 404 page has not been found, die()
 	-	Set $page, $ext and $setting
-6. Start theme
-7. Use $page->setting to decide how to echo the page
-8. End theme
+6. Use $page->setting to decide how to echo the page
+7. Echo page into output buffer
+8. Echo theme, inserting page into it.
