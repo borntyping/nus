@@ -1,102 +1,128 @@
 <?php
 
-if (!function_exists('fb')) {
-	function fb ($text,$label,$type){
-		$msg = $label.": ".$text;
-		error_log($msg);
-	}
-}
-
-function clean($str) {
-	$str = filter_var($str, 513);
-	$str = filter_var($str, 515);
+function clean($str)
+{
+	$str = filter_var($str, FILTER_SANITIZE_STRING);
+	$str = filter_var($str, FILTER_SANITIZE_SPECIAL_CHARS);
 	$str = str_replace(array("..",";"),"",$str);
 	return $str;
 }
 
-class page {
-	// Holds the page information
+class app
+{
+	var $config;
 	
-	// Config info
-	var $default_page;
-	var $filetypes;
-	var $not_found_page;
+	function __construct()
+	{
+		$this->config = parse_ini_file("config.ini", true);	
+	}
+		
+	var $theme;
+
+	function get_theme()
+	{
+		$this->theme = $this->config['nus']['theme'];
+		if($this->theme != "")
+		{
+			$theme = THEMEDIR.'/'.$this->theme."/theme.php";
+		}
+		else
+		{
+			$theme = THEMEDIR.'/theme.php';
+		}
+		$this->theme = $theme;
+		return $theme;
+	}
+}
+
+class page
+{
+	/* Holds the page information */
 	
 	// Page info
 	var $name;
 	var $ext;
 	var $setting;
 	var $found;
-	var $dir;
-	var $theme_dir;
+	var $path;
+	
+	var $filetypes;
+	var $pagedir;
 	
 	// Page contents
 	var $meta;
 	var $contents;
 	
 	// On new page()
-	function __construct($config) {
+	function __construct($config)
+	{
 		// Get useful config values
-		$this->default_page = $config['pages']['default'];
+		define("NOTFOUND_PAGE", $config['pages']['notfound']);
+		define("DEFAULT_PAGE", $config['pages']['default']);;
+		define("URL", $config['nus']['parentdir']);
+		$this->pagedir = $config['nus']['pages'];
 		$this->filetypes = $config['filetypes'];
-		$this->dir = $config['dir']['pages'];
-		$this->not_found_page = $config['pages']['not_found'];
-		$this->url = $config['dir']['nus'];
-		
 		$this->found = FALSE;
+		$this->i = 0;
 	}
 
 	// Finds the name of the requested page
-	function find_page($override = FALSE) {
-		if($override == FALSE) :
-			if(isset($_GET["page"])) :
+	function find_page_name($override = FALSE)
+	{
+		if($override == TRUE)
+		{
+			$this->name = $override;
+		}
+		else
+		{
+			if(isset($_GET["page"]))
+			{
 				$name = $_GET["page"];
-			else :
+			}
+			else
+			{
 				$name = $_SERVER["REQUEST_URI"];
 				$name = explode('?',$name,2);
 				$name = $name[0];
-				$name = str_replace($this->url,"",$name);
-			endif;
-			$name = clean($name);
-			if ($name == ""|$name == "/") :
-				$name = $this->default_page;
-				fb("No page was given","Used default page",'info');
-			endif;
-			$this->name = $name;
-		else :
-			$this->name = $override;
-		endif;
-		
-		// Cycle filetypes to find page
-		foreach ($this->filetypes as $filetype => $set) :
-			if (file_exists($this->dir.$this->name.".".$filetype)) :
+				$name = str_replace(URL,"",$name);
+			}
+		}
+		if ($name == ""|$name == "/")
+		{
+			$name = DEFAULT_PAGE;
+		}
+		$this->name = clean($name);
+	}
+
+	// Cycle filetypes to find page
+	function find_page()
+	{
+		if(!isset($this->name))
+		{
+			find_page_name();
+		}
+		foreach ($this->filetypes as $filetype => $set)
+		{
+			if (file_exists($this->pagedir."/".$this->name.".".$filetype))
+			{
 				$this->ext = $filetype;
 				$this->setting = $set;
 				$this->found = TRUE;
 				break;
-			endif;
-		endforeach;
+			}
+		}
 		
-		// Deal with 404 errors
-		if ($this->found == FALSE) :
+		if ($this->found == FALSE)
+		{
 			// Oh noes! There is no 404 page!
-			if ($this->name == $this->not_found_page) :
-				fb("404 page not found in ".$this->dir.". Reverted to failsafe.php","Warning",'error');
+			if ($this->name == NOTFOUND_PAGE)
+			{
 				header("HTTP/1.0 404 Not Found");
-				$this->dir = "app/";
-				$this->name = "failsafe";
-				$this->ext = "php";
-				$this->setting = 0;
-				$this->found = TRUE;
-			else :
-				header("HTTP/1.0 404 Not Found");
-				$this->find_page("404");
-			endif;
-		endif;
-	}
-	
-	function get_page_path() {
-		return $this->dir.$this->name.".".$this->ext;
+				die("Page not found!");
+			}
+		}
+		$this->path = $this->pagedir."/".$this->name.".".$this->ext;
+		return $this->path;
 	}
 		
 	var $gets;
@@ -106,25 +132,30 @@ class page {
 		$gets = $_SERVER["REQUEST_URI"];
 		$gets = clean($gets);
 		$gets = explode('?',$gets,2);
-		if(isset($gets[1]) == FALSE) :
+		if(isset($gets[1]) == FALSE)
+		{
 			// Return empty array if there are no gets
 			$this->gets = array();
-		else :
+		}
+		else
+		{
 			$gets = $gets[1];
 			$gets = explode('&#38',$gets);
-			foreach ($gets as &$get) :
+			foreach ($gets as &$get)
+			{
 				$line = explode("=",$get);
 				$one = $line[0];
-				if(!isset($line[1]))
+				if (!isset($line[1]))
+				{
 					$line[1] = TRUE;
+				}
 				$two = $line[1];
 				$gets_final[$one] = $two;
 				unset($line);
-			endforeach;
+			}
 			$this->gets = $gets_final;
 			unset($gets_final);
-		endif;
-		fb($this->gets, "Gets", "Info");
+		}
 		return $this->gets;
 	}
 }

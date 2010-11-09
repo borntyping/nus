@@ -1,0 +1,143 @@
+<!DOCTYPE HTML>
+<html lang="en-UK">
+<head>
+	<title>Borntyping - <?php
+			if(isset($page->meta['title'])) :
+				echo $page->meta['title'];
+			else:
+				echo $page->name;
+			endif;
+		?>
+	</title>
+	<meta charset="UTF-8">
+	<link rel="stylesheet" href="/theme/styles.css" />
+	<?php if(isset($page->meta['css'])) : ?>
+		<link rel="stylesheet" href="<?php echo "/".$theme."/".$page->meta['css']; ?>" />
+	<?php endif; ?>
+	<link rel="openid2.provider" href="https://www.google.com/accounts/o8/ud?source=profiles" > 
+	<link rel="openid2.local_id" href="http://www.google.com/profiles/borntyping" > 
+	<script type="text/javascript" src="<?php echo $theme; ?>js/jquery.idTabs.min.js"></script>
+</head>
+<body>
+
+<div id="header">
+	<a href="/"><h1>Borntyping</h1></a>
+	<ul id="nav">
+		<li class="home					img-home"><a href="/">Home</a></li>
+		<li class="blog						img-comment"><a href="/blog">Blog</a></li>
+		<li class="portfolio	img-clip"><a href="/portfolio">Portfolio</a></li>
+		<li class="tumblr			img-star"><a href="/tumblr">Tumblr</a></li>
+		<li class="contact			img-email"><a href="/contact">Contact me</a></li>
+		<li class="rss							img-rss"><a href="http://feeds.feedburner.com/borntyping">RSS</a></li>
+	</ul>
+</div>
+
+<div id="main">
+	<div id="content">
+		<?php echo $page->contents; ?>
+	</div>
+	<div id="sidebar-main">
+
+		<div id="about" class="menu">
+			<h3>About Me</h3>
+			<p>I'll put something here eventually. Promise.</p>
+		</div>
+
+		<div id="follow" class="menu">
+			<h3>Looking for me?</h3>
+			<div class="social">
+				<a href="http://twitter.com/ziaix" title="Follow me on Twitter">
+					<div class="logo">
+						<img src="/theme/img/social/32/twitter.png" alt="" />
+					</div>
+					<div class="content">
+						Follow me on Twitter
+					</div>
+				</a>
+			</div>
+			<div class="social">
+				<a href="http://www.reddit.com/user/Ziaix/" title="Friend me on Reddit">
+					<div class="logo">
+						<img src="/theme/img/social/32/reddit.png" alt="" />
+					</div>
+					<div class="content">
+						Friend me on Reddit
+					</div>
+				</a>
+			</div>
+			<div class="social">
+				<a href="mailto:ziaix0.8@googlemail.com" title="Talk to me on Live">
+					<div class="logo">
+						<img src="/theme/img/social/32/live.png" alt="" />
+					</div>
+					<div class="content">
+						Talk to me on Live
+					</div>
+				</a>
+			</div>
+			<div class="social">
+				<a href="http://http://www.youtube.com/user/Borntyping" title="I'm on YouTube">
+					<div class="logo">
+						<img src="/theme/img/social/32/youtube.png" alt="...not that i actually pot videos or anything..." />
+					</div>
+					<div class="content">
+						I'm on YouTube
+					</div>
+				</a>
+			</div>
+			<div class="social">
+				<a href="http://feeds.feedburner.com/borntyping" title="Subscribe to my feed">
+					<div class="logo">
+						<img src="/theme/img/social/32/rss.png" alt="" />
+					</div>
+					<div class="content">
+						Subscribe to my feed
+					</div>
+				</a>
+			</div>
+		</div>
+
+		<div id="friends" class="menu">
+			<h3>Friends of mine</h3>
+			<ul>
+				<li>Dan 'Haribo' Evans, programmer, blogger and game designer. See his blog at <a href="http://bytecove.co.uk/">bytecove.co.uk</a> and his games here <a href="http://razor-studios.co.uk/">Razor Studios</a>.</li>
+				<li><a href="http://shakenearth.com/">Shaken Earth</a> and <a href="http://zagorath.wordpress.com/">Zagorath</a>, some of the writers for <a href="http://www.theteengeek.com/">The Teen Geek</a>.</li>
+			</ul>
+		</div>
+
+		<div id="pages" class="menu">
+			<h3>Pages</h3>
+			<ul>
+				<li><a href="/">Home</a></li>
+				<li><a href="/portfolio">My portfolio</a></li>
+				<li><a href="/about">About me</a></li>
+				<li><a href="/projects">My projects</a></li>
+				<li><a href="/contact">Contact me</a></li>
+			</ul>
+			<h3>Site</h3>
+			<ul>
+				<li><a href="/blog/wp-admin/">Blog admin</a></li>
+				<li><a href="http://feeds.feedburner.com/borntyping">RSS feed</a></li>
+			</ul>
+		</div>
+
+		<!-- This will never be hidden on the sidebar -->
+		<div id="alwayshere" class="menu">
+			<h3></h3>
+		</div>
+
+	</div>
+	<div id="sidebar-menu" class="idTabs">
+		<a class="click img-user" href="#about" title="About me"></a>
+		<a class="click img-comment" href="#follow" title="Follow me"></a>
+		<a class="click img-star" href="#friends" title="Friends"></a>
+		<a class="click img-book" href="#pages" title="Pages"></a>
+	</div>
+</div>
+
+<div id="footer">
+	Site &copy; <a href="http://borntyping.co.uk/">Samuel Clements</a> 2010 - Attributions: <a href="http://www.sunsean.com/idTabs/" rel="nofollow">idTabs</a>, <a href="http://prothemedesign.com/circular-icons/" rel="nofollow">circular icons</a>, <a href="http://www.blogperfume.com/social-media-icons-pack-in-3-sizes-for-download/" rel="nofollow">social icons</a>.
+</div>
+
+</body>
+</html>
