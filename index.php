@@ -17,6 +17,7 @@ $app->get_theme();
 $page = new page($app->config);
 $page->find_page_name();
 $page->find_page();
+$_GET = $page->find_gets();
 
 // Get the page output
 ob_start();
