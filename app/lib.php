@@ -11,27 +11,12 @@ function clean($str)
 class app
 {
 	var $config;
+	var $theme;
 	
 	function __construct()
 	{
-		$this->config = parse_ini_file("config.ini", true);	
-	}
-		
-	var $theme;
-
-	function get_theme()
-	{
-		$this->theme = $this->config['nus']['theme'];
-		if($this->theme != "")
-		{
-			$theme = THEMEDIR.'/'.$this->theme."/theme.php";
-		}
-		else
-		{
-			$theme = THEMEDIR.'/theme.php';
-		}
-		$this->theme = $theme;
-		return $theme;
+		$this->config = parse_ini_file("config.ini", true);
+		$this->theme = 'themes/'.$this->config['nus']['theme'];
 	}
 }
 
@@ -87,11 +72,13 @@ class page
 				$name = str_replace(URL,"",$name);
 			}
 		}
+		
 		if ($name == ""|$name == "/")
 		{
 			$name = DEFAULT_PAGE;
 		}
 		$this->name = clean($name);
+		return $this->name;
 	}
 
 	// Cycle filetypes to find page
@@ -101,6 +88,7 @@ class page
 		{
 			find_page_name();
 		}
+		
 		foreach ($this->filetypes as $filetype => $set)
 		{
 			if (file_exists($this->pagedir."/".$this->name.".".$filetype))
@@ -121,41 +109,8 @@ class page
 				die("Page not found!");
 			}
 		}
+		
 		$this->path = $this->pagedir."/".$this->name.".".$this->ext;
 		return $this->path;
-	}
-		
-	var $gets;
-
-	function find_gets() {
-		// Gets the $_GET values directly though the url, for use with includes
-		$gets = $_SERVER["REQUEST_URI"];
-		$gets = clean($gets);
-		$gets = explode('?',$gets,2);
-		if(isset($gets[1]) == FALSE)
-		{
-			// Return empty array if there are no gets
-			$this->gets = array();
-		}
-		else
-		{
-			$gets = $gets[1];
-			$gets = explode('&#38',$gets);
-			foreach ($gets as &$get)
-			{
-				$line = explode("=",$get);
-				$one = $line[0];
-				if (!isset($line[1]))
-				{
-					$line[1] = TRUE;
-				}
-				$two = $line[1];
-				$gets_final[$one] = $two;
-				unset($line);
-			}
-			$this->gets = $gets_final;
-			unset($gets_final);
-		}
-		return $this->gets;
 	}
 }

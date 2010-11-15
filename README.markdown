@@ -18,12 +18,15 @@ Activate by putting in the top level directory, and setting the server to redire
 Use the included .htaccess, or put something to this effect into the existing .htaccess or server .conf files
 
 	ErrorDocument 404 /index.php
+	
+Putting this in the .conf works as well, and works slightly better ($_GETS will be passed to the page):
+
+	RewriteEngine On
+	RewriteCond %{DOCUMENT_ROOT}%{REQUEST_FILENAME} !-f
+	RewriteCond %{DOCUMENT_ROOT}%{REQUEST_FILENAME} !-d
+	RewriteRule ^(.+)$	/index.php?page=$1 [QSA]
 
 This redirects all pages to nus, unless they exist as a file on the server.
-
-Sending particular pages to
-	/index.php?page=name
-should also work.
 
 ## Basic Structure
 

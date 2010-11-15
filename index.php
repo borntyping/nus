@@ -11,23 +11,20 @@
 */
 
 // Settings
-define("THEMEDIR","themes");
+define("THEMES_DIR","themes");
 define("APPDIR","app");
 
 // Start app
 // Import libary and locate theme files
 require_once(APPDIR.'/lib.php');
 $app = new app(APPDIR);
-$app->get_theme();
+define("THEMEDIR",$app->theme);
 
 // Find the page name, and find the page file
 // Will look for 404 page if no page is found
 $page = new page($app->config);
 $page->find_page_name();
 $page->find_page();
-
-// Get GET vars from url and place them into $_GET
-$_GET = $page->find_gets();
 
 // Get the page output
 // Uses the setting types defined in config.ini
@@ -54,7 +51,7 @@ ob_end_clean();
 
 // Include theme
 // Theme file should print $page->contents where wanted
-include $app->theme;
+include THEMEDIR.'theme.php;
 
 // Exit
 ?>
