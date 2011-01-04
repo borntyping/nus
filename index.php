@@ -4,54 +4,110 @@
 		(c) Samuel Clements 2010
 		http://github.com/ziaix/nus
 		
-		-----
-		
-		./index.php
-		Gets the page and theme
+		v1.2.0
 */
 
-// Settings
-define("THEMES_DIR","themes");
-define("APPDIR","app");
+define("CONFIG_FILE_NAME","config.ini");
 
-// Start app
-// Import libary and locate theme files
-require_once(APPDIR.'/lib.php');
-$app = new app(APPDIR);
-define("THEMEDIR",$app->theme);
+/* Init */
 
-// Find the page name, and find the page file
-// Will look for 404 page if no page is found
-$page = new page($app->config);
-$page->find_page_name();
-$page->find_page();
-
-// Get the page output
-// Uses the setting types defined in config.ini
-ob_start();
-switch ($page->setting)
+function clean($str)
 {
-	case 0:
-		// Include as php
-		include($page->path);
-		break;
-	case 1:
-		// Print file, don't run php
-		echo file_get_contents($page->path);
-		break;
-	case 2:
-		// Print file as code, escape html
-		if ($config['nus']['codeblocks']) { echo '<div class="nus-code-block"><pre>'; }
-		echo htmlentities(file_get_contents($page->path));
-		if ($config['nus']['codeblocks'])	{ echo '</pre></div>'; }
-		break;
+	$str = filter_var($str, FILTER_SANITIZE_STRING);
+	$str = filter_var($str, FILTER_SANITIZE_SPECIAL_CHARS);
+	$str = str_replace(array("..",";"),"",$str);
+	return $str;
 }
-$page->contents = ob_get_contents();
-ob_end_clean();
 
-// Include theme
-// Theme file should print $page->contents where wanted
-include THEMEDIR.'theme.php;
+class page
+{
+	var $name;
+	var $meta;
+	var $contents;
+	var $filetypes;
+	
+	function __construct($filetypes)
+	{
+		$this->filetypes = $filetypes;
+	}
+	
+	function find_page($errorpage)
+	{
+		/* Get name */	
+		if (!isset($_GET["page"]) || in_array($_GET["page"],array("","/","/index.html")))
+		{
+			$name = DEFAULT_PAGE;
+		}
+		else
+		{
+			$name = clean($_GET["page"]);
+			$name = rtrim($name,"/");
+		}
 
-// Exit
+		/* Find file */
+		foreach ($this->filetypes as $filetype => $permission)
+		{
+			$pagename = "/${name}.${filetype}";
+			if (file_exists(DIR_PAGES.$pagename))
+			{
+				$name = $pagename;
+				$found = TRUE;
+				break;
+			}
+		}
+		
+		if (!isset($found))
+		{
+			if ($name == $errorpage)
+			{
+				header("HTTP/1.0 404 Not Found");
+				die("Page not found!");
+			}
+			else
+			{
+				$name = "/${errorpage}";
+			}
+		}
+		$this->name = $name;
+	}
+	
+	function get_contents()
+	{
+		$extension = explode('.',$this->name);
+		$extension = $extension[1];
+		$permission = $this->filetypes["${extension}"];
+		$page = DIR_PAGES.$this->name;
+		
+		ob_start();
+		switch ($permission)
+		{
+			case 0:
+				include($page);
+				break;
+			case 1:
+				echo file_get_contents($page);
+				break;
+			case 2:
+				echo '<pre>'.htmlentities(file_get_contents($page)).'<pre>';
+				break;
+		}
+		$this->contents = ob_get_contents();
+		ob_end_clean();
+	}
+}
+
+/* Execute */
+
+$config = parse_ini_file(CONFIG_FILE_NAME, true);
+define("DIR_PAGES",$config['directorys']['pages']);
+define("DEFAULT_PAGE",$config['pages']['default']);
+
+$page = new page($config['filetypes']);
+$page->find_page($config['pages']['errorpage']);
+$page->get_contents($config['filetypes']);
+
+if(isset($config['theme']))
+	$config['theme'] = "/".$config['theme'];
+include $config['directorys']['theme'].$config['theme'].'/theme.php';
+
 ?>
