@@ -29,14 +29,17 @@ class page
 	function __construct($filetypes)
 	{
 		$this->filetypes = $filetypes;
+		$this->meta = array();
 	}
 	
 	function find_page($errorpage)
 	{
-		/* Get name */	
-		if (!isset($_GET["page"]) || in_array($_GET["page"],array("","/","/index.html")))
+		/* Get name */
+		if (!isset($_GET["page"]) or in_array($_GET["page"],array("","/","/index.html")))
 		{
 			$name = DEFAULT_PAGE;
+			//$name = explode('.',$name);
+			//$name = $name[1];
 		}
 		else
 		{
@@ -65,6 +68,7 @@ class page
 			}
 			else
 			{
+				header("HTTP/1.0 404 Not Found");
 				$name = "/${errorpage}";
 			}
 		}
@@ -99,6 +103,8 @@ class page
 /* Execute */
 
 $config = parse_ini_file(CONFIG_FILE_NAME, true);
+if(isset($config['theme'])) { $config['theme'] = "/".$config['theme']; }
+define("DIR_THEME",$config['directorys']['theme'].$config['theme'].'/');
 define("DIR_PAGES",$config['directorys']['pages']);
 define("DEFAULT_PAGE",$config['pages']['default']);
 
@@ -106,8 +112,6 @@ $page = new page($config['filetypes']);
 $page->find_page($config['pages']['errorpage']);
 $page->get_contents($config['filetypes']);
 
-if(isset($config['theme']))
-	$config['theme'] = "/".$config['theme'];
-include $config['directorys']['theme'].$config['theme'].'/theme.php';
+include DIR_THEME.'theme.php';
 
 ?>
