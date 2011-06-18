@@ -3,7 +3,7 @@
 		Nice Urls, Simple CMS
 		(c) Samuel Clements 2010
 		http://github.com/ziaix/nus
-		
+
 		v1.2.0
 */
 
@@ -25,13 +25,13 @@ class page
 	var $meta;
 	var $contents;
 	var $filetypes;
-	
+
 	function __construct($filetypes)
 	{
 		$this->filetypes = $filetypes;
 		$this->meta = array();
 	}
-	
+
 	function find_page($errorpage)
 	{
 		/* Get name */
@@ -58,7 +58,7 @@ class page
 				break;
 			}
 		}
-		
+
 		if (!isset($found))
 		{
 			if ($name == $errorpage)
@@ -74,14 +74,14 @@ class page
 		}
 		$this->name = $name;
 	}
-	
+
 	function get_contents()
 	{
 		$extension = explode('.',$this->name);
 		$extension = $extension[1];
 		$permission = $this->filetypes["${extension}"];
 		$page = DIR_PAGES.$this->name;
-		
+
 		ob_start();
 		switch ($permission)
 		{
@@ -97,6 +97,15 @@ class page
 		}
 		$this->contents = ob_get_contents();
 		ob_end_clean();
+	}
+
+	function get_meta($meta, $default) {
+		if(isset($this->meta[$meta]))
+		{
+			return $this->meta[$meta];
+		} else {
+			return $default;
+		}
 	}
 }
 
