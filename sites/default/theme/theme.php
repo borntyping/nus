@@ -15,6 +15,6 @@
 		</style>
 	</head>
 	<body>
-		<?php echo $page->contents; ?>
+		<?php $nus->render_page(); ?>
 	</body>
 </html>

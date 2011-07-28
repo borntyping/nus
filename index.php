@@ -4,123 +4,111 @@
 		(c) Samuel Clements 2010
 		http://github.com/ziaix/nus
 
-		v1.2.0
+		v2.0.1
 */
 
-define("CONFIG_FILE_NAME","config.ini");
+define('DEFAULT_PAGE','index');
+define('SITES_CONFIG','sites/sites.ini');
 
-/* Init */
+define('SITES_DIR','./sites/');
+define('DEFAULT_SITE','default/');
 
+/* Classes */
+
+class cms
+{
+	var $directory;
+	var $filetypes;
+	var $page;
+	
+	function __construct()
+	{
+		$this->filetypes = array('php','html','txt');
+	}
+	
+	function match_site()
+	{
+		$site = $_SERVER['SERVER_NAME'];
+		$sites = parse_ini_file(SITES_CONFIG); //, true);
+		foreach ($sites as $directory => $pattern)
+		{
+			if(preg_match($pattern,$site))
+			{
+				$this->directory = SITES_DIR.$directory;
+				return;
+			}
+		}
+		$this->directory = SITES_DIR.DEFAULT_SITE;
+		return;
+	}
+	
+	function get_page_name()
+	{
+		if ( !isset($_GET['page']) or in_array($_GET['page'], array('','index.html')) )
+		{
+			$name = DEFAULT_PAGE;
+		}
+		else
+		{
+			$name = $_GET['page'];
+		}
+		return rtrim(clean($name),'/');
+	}
+	
+	function find_page($name,$directory,$filetypes)
+	{
+		$path = "{$directory}{$name}";
+		
+		foreach ($filetypes as $ext)
+		{
+			$path = "$path.$ext";
+			if( file_exists($path) )
+				return array($path, $ext);
+		}
+		return false;
+	}
+	
+	function create_pages()
+	{
+		define('PAGES_DIR', "{$this->directory}/pages/");
+		define('THEME_DIR', "{$this->directory}/theme/");
+		$this->page = $this->find_page($this->get_page_name(),PAGES_DIR,$this->filetypes);
+		$this->theme = $this->find_page('theme',THEME_DIR,$this->filetypes);
+	}
+	
+	function render_page()
+	{
+		$path = $this->page[0];
+		$ext = $this->page[1];
+		switch ($ext)
+		{
+			case 'php':
+				include($path);
+				break;
+			case 'html':
+				print file_get_contents($path);
+				break;
+			//case 'md':
+			//case 'markdown':
+				break;
+			case 'txt':
+				print '<pre>'.htmlentities(file_get_contents($path)).'<pre>';
+				break;
+		}
+	}
+}
+
+/* Functions */
 function clean($str)
 {
 	$str = filter_var($str, FILTER_SANITIZE_STRING);
 	$str = filter_var($str, FILTER_SANITIZE_SPECIAL_CHARS);
-	$str = str_replace(array("..",";"),"",$str);
+	$str = str_replace(array('..',';'),'',$str);
 	return $str;
 }
 
-class page
-{
-	var $name;
-	var $meta;
-	var $contents;
-	var $filetypes;
+$nus = new cms();
+$nus->match_site();
+$nus->create_pages();
 
-	function __construct($filetypes)
-	{
-		$this->filetypes = $filetypes;
-		$this->meta = array();
-	}
-
-	function find_page($errorpage)
-	{
-		/* Get name */
-		if (!isset($_GET["page"]) or in_array($_GET["page"],array("","/","/index.html")))
-		{
-			$name = DEFAULT_PAGE;
-			//$name = explode('.',$name);
-			//$name = $name[1];
-		}
-		else
-		{
-			$name = clean($_GET["page"]);
-			$name = rtrim($name,"/");
-		}
-
-		/* Find file */
-		foreach ($this->filetypes as $filetype => $permission)
-		{
-			$pagename = "/${name}.${filetype}";
-			if (file_exists(DIR_PAGES.$pagename))
-			{
-				$name = $pagename;
-				$found = TRUE;
-				break;
-			}
-		}
-
-		if (!isset($found))
-		{
-			if ($name == $errorpage)
-			{
-				header("HTTP/1.0 404 Not Found");
-				die("Page not found!");
-			}
-			else
-			{
-				header("HTTP/1.0 404 Not Found");
-				$name = "/${errorpage}";
-			}
-		}
-		$this->name = $name;
-	}
-
-	function get_contents()
-	{
-		$extension = explode('.',$this->name);
-		$extension = $extension[1];
-		$permission = $this->filetypes["${extension}"];
-		$page = DIR_PAGES.$this->name;
-
-		ob_start();
-		switch ($permission)
-		{
-			case 0:
-				include($page);
-				break;
-			case 1:
-				echo file_get_contents($page);
-				break;
-			case 2:
-				echo '<pre>'.htmlentities(file_get_contents($page)).'<pre>';
-				break;
-		}
-		$this->contents = ob_get_contents();
-		ob_end_clean();
-	}
-
-	function get_meta($meta, $default) {
-		if(isset($this->meta[$meta]))
-		{
-			return $this->meta[$meta];
-		} else {
-			return $default;
-		}
-	}
-}
-
-/* Execute */
-
-$config = parse_ini_file(CONFIG_FILE_NAME, true);
-if(isset($config['theme'])) { $config['theme'] = "/".$config['theme']; }
-define("DIR_THEME",$config['directorys']['theme'].$config['theme'].'/');
-define("DIR_PAGES",$config['directorys']['pages']);
-define("DEFAULT_PAGE",$config['pages']['default']);
-
-$page = new page($config['filetypes']);
-$page->find_page($config['pages']['errorpage']);
-$page->get_contents($config['filetypes']);
-
-include DIR_THEME.'theme.php';
-
-?>
+include($nus->theme[0]);
