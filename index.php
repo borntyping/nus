@@ -13,6 +13,8 @@ define('SITES_CONFIG','sites/sites.ini');
 define('SITES_DIR','./sites/');
 define('DEFAULT_SITE','default/');
 
+define('ERRORPAGE','error404');
+
 /* Classes */
 
 class cms
@@ -23,7 +25,7 @@ class cms
 	
 	function __construct()
 	{
-		$this->filetypes = array('php','html','txt');
+		$this->filetypes = array('php','html','txt','md','markdown');
 	}
 	
 	function match_site()
@@ -61,11 +63,23 @@ class cms
 		
 		foreach ($filetypes as $ext)
 		{
-			$path = "$path.$ext";
-			if( file_exists($path) )
-				return array($path, $ext);
+			$p = "$path.$ext";
+			if( file_exists($p) )
+			{
+				return array($p, $ext);
+			}
 		}
-		return false;
+		
+		if ( $name == ERRORPAGE )
+		{
+			header("HTTP/1.0 404 Not Found");
+			die("Page not found!");
+			return;
+		}
+		else
+		{
+			return $this->find_page(ERRORPAGE,$directory,$filetypes);
+		}
 	}
 	
 	function create_pages()
@@ -79,20 +93,20 @@ class cms
 	function render_page()
 	{
 		$path = $this->page[0];
-		$ext = $this->page[1];
-		switch ($ext)
+		$type = $this->page[1];
+		switch ($type)
 		{
 			case 'php':
 				include($path);
 				break;
+			case 'md':
+			case 'markdown':
+				include_once "markdown.php";
+				print Markdown(file_get_contents($path));
+				break;
 			case 'html':
+			default:
 				print file_get_contents($path);
-				break;
-			//case 'md':
-			//case 'markdown':
-				break;
-			case 'txt':
-				print '<pre>'.htmlentities(file_get_contents($path)).'<pre>';
 				break;
 		}
 	}
