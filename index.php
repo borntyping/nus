@@ -7,7 +7,7 @@
 		v2.0.1
 */
 
-define('DEFAULT_PAGE','index');
+define('DEFAULT_PAGE','home');
 define('SITES_CONFIG','sites/sites.ini');
 
 define('SITES_DIR','./sites/');
@@ -73,7 +73,7 @@ class cms
 		if ( $name == ERRORPAGE )
 		{
 			header("HTTP/1.0 404 Not Found");
-			die("Page not found!");
+			die("Page not found! $path");
 			return;
 		}
 		else
