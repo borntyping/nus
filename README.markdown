@@ -1,5 +1,7 @@
 # Nice Urls, Simple CMS
 
+*This is an old, unmaintained project, mostly here for historical reasons - if you need a CMS, there are better alternatives out there.*
+
 Provides a simple Content management system that provides pages with nice urls, such as
   - http://www.domain.com/homepage
   - http://www.domain.com/about
